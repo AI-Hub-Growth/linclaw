@@ -19,13 +19,13 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "LinClaw - AI 个人助理",
-  description: "让 AI 真正替你做事，支持多平台接入，开源免费",
-  keywords: ["AI", "助理", "Agent", "AgentScope", "开源", "钉钉", "飞书", "QQ"],
+  title: "LinClaw - 七牛云 AI · OpenClaw 可视化管理面板",
+  description: "集成七牛云 AI 大模型广场，300 万 Token 免费额度，支持多平台接入",
+  keywords: ["LinClaw", "OpenClaw", "七牛云", "AI", "Agent", "开源", "钉钉", "飞书", "QQ"],
   authors: [{ name: "LinClaw Team" }],
   openGraph: {
-    title: "LinClaw - AI 个人助理",
-    description: "让 AI 真正替你做事，支持多平台接入，开源免费",
+    title: "LinClaw - 七牛云 AI · OpenClaw 可视化管理面板",
+    description: "集成七牛云 AI 大模型广场，300 万 Token 免费额度，支持多平台接入",
     type: "website",
   },
 };

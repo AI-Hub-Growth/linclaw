@@ -119,6 +119,10 @@ const panel = Object.freeze({
   writePanelConfig: (config) => invokeCommand('write_panel_config', { config }),
 })
 
+const openai = Object.freeze({
+  getStatus: () => invokeCommand('openai_adapter_status'),
+})
+
 const environment = Object.freeze({
   checkInstallation: () => cachedCommand('check_installation', {}, 60000),
   initOpenclawConfig: () => {
@@ -240,6 +244,7 @@ export const featureServices = Object.freeze({
   memory,
   messaging,
   panel,
+  openai,
   environment,
   backups,
   extensions,

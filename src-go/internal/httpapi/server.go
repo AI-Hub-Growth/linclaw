@@ -23,20 +23,30 @@ type Server struct {
 	app      *appctx.Context
 	registry *commands.Registry
 	webRoot  string
+	openai   *openAIAdapter
 }
 
 var apiRequestSeq uint64
 
 func NewServer(app *appctx.Context, registry *commands.Registry, webRoot string) *Server {
+	resolvedWebRoot := webRoot
+	if !filepath.IsAbs(resolvedWebRoot) {
+		resolvedWebRoot = filepath.Join(app.PackageRoot, webRoot)
+	}
 	return &Server{
 		app:      app,
 		registry: registry,
-		webRoot:  filepath.Join(app.PackageRoot, webRoot),
+		webRoot:  filepath.Clean(resolvedWebRoot),
+		openai:   newOpenAIAdapter(app),
 	}
 }
 
+func (s *Server) WebRoot() string {
+	return s.webRoot
+}
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.applyCORS(w)
+	s.applyCORS(w, r)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -45,6 +55,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case strings.HasPrefix(r.URL.Path, "/__api/"):
 		s.handleAPI(w, r)
+	case strings.HasPrefix(r.URL.Path, "/v1/"):
+		s.handleOpenAI(w, r)
 	case strings.HasPrefix(r.URL.Path, "/ws"):
 		s.proxyGateway(w, r)
 	default:
@@ -76,13 +88,22 @@ func (s *Server) handleAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	authenticated := s.isAuthenticated(r)
+	if s.isAuthRequired() && cmd == "openai_adapter_status" && !authenticated {
+		writeError(w, models.NewAPIError(http.StatusUnauthorized, "AUTH_REQUIRED", "未登录"))
+		return
+	}
+	if cmd == "openai_adapter_status" {
+		s.openai.handleStatus(w, r)
+		return
+	}
+
 	command, ok := s.registry.Lookup(cmd)
 	if !ok {
 		writeError(w, models.NewAPIError(http.StatusNotFound, "UNKNOWN_COMMAND", "未知命令: "+cmd))
 		return
 	}
 
-	authenticated := s.isAuthenticated(r)
 	if s.isAuthRequired() && !s.registry.IsAuthExempt(cmd) && !authenticated {
 		writeError(w, models.NewAPIError(http.StatusUnauthorized, "AUTH_REQUIRED", "未登录"))
 		return
@@ -216,8 +237,20 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, indexPath)
 }
 
-func (s *Server) applyCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+func (s *Server) applyCORS(w http.ResponseWriter, r *http.Request) {
+	configuredOrigins := appctx.ConfiguredPanelOrigins()
+	if len(configuredOrigins) == 0 {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	} else {
+		origin := strings.TrimSpace(r.Header.Get("Origin"))
+		for _, allowed := range configuredOrigins {
+			if origin == allowed {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Vary", "Origin")
+				break
+			}
+		}
+	}
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }
@@ -238,6 +271,17 @@ func writeError(w http.ResponseWriter, apiErr *models.APIError) {
 		apiErr = models.NewAPIError(http.StatusInternalServerError, "UNKNOWN", "未知错误")
 	}
 	writeJSON(w, apiErr.Status, apiErr)
+}
+
+func (s *Server) handleOpenAI(w http.ResponseWriter, r *http.Request) {
+	switch {
+	case r.URL.Path == openAIAdapterBasePath+"/models" && r.Method == http.MethodGet:
+		s.openai.handleModels(w, r)
+	case r.URL.Path == openAIAdapterBasePath+"/chat/completions":
+		s.openai.handleChatCompletions(w, r)
+	default:
+		writeOpenAIError(w, http.StatusNotFound, "not_found", "OpenAI 协议路径不存在")
+	}
 }
 
 func clientIP(r *http.Request) string {

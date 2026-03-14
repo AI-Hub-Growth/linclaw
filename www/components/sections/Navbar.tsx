@@ -85,7 +85,7 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center">
               <a
-                href="https://github.com/sunqirui1987/linx-claw"
+                href="https://github.com/sunqirui1987/linclaw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200"
@@ -145,7 +145,7 @@ export default function Navbar() {
                   ))}
                   <div className="mt-2 pt-2 border-t border-white/10 flex flex-col gap-2">
                     <a
-                      href="https://github.com/sunqirui1987/linx-claw"
+                      href="https://github.com/sunqirui1987/linclaw"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors"

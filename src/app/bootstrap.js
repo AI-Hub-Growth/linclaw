@@ -1,5 +1,4 @@
 import { openMobileSidebar, renderSidebar } from '../components/sidebar.js'
-import { tryShowEngagement } from '../components/engagement.js'
 import { statusIcon } from '../lib/icons.js'
 import { featureServices } from '../lib/api/feature-services.js'
 import {
@@ -90,7 +89,6 @@ async function bootShell({ sidebar, content }) {
   onGatewayChange((running) => {
     if (running) {
       autoConnectWebSocket()
-      setTimeout(tryShowEngagement, 5000)
       return
     }
     wsClient.disconnect()

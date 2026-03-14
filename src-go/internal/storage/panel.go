@@ -21,22 +21,28 @@ const (
 )
 
 type Store struct {
-	homeDir     string
-	packageRoot string
+	homeDir        string
+	packageRoot    string
+	managedRootDir string
 
 	versionOnce sync.Once
 	version     string
 	versionErr  error
 }
 
-func NewStore(packageRoot string) (*Store, error) {
+func NewStore(packageRoot string, managedRoot ...string) (*Store, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
 	}
+	root := filepath.Join(packageRoot, ".linclaw")
+	if len(managedRoot) > 0 && managedRoot[0] != "" {
+		root = managedRoot[0]
+	}
 	return &Store{
-		homeDir:     homeDir,
-		packageRoot: packageRoot,
+		homeDir:        homeDir,
+		packageRoot:    packageRoot,
+		managedRootDir: root,
 	}, nil
 }
 
@@ -49,7 +55,7 @@ func (s *Store) PackageRoot() string {
 }
 
 func (s *Store) ManagedRootDir() string {
-	return filepath.Join(s.packageRoot, ".linclaw")
+	return s.managedRootDir
 }
 
 func (s *Store) ManagedRuntimeDir() string {
@@ -214,6 +220,11 @@ func (s *Store) LoadOrCreateSessionSecret() ([]byte, error) {
 
 func (s *Store) PackageVersion() string {
 	s.versionOnce.Do(func() {
+		if value := strings.TrimSpace(os.Getenv("LINCLAW_APP_VERSION")); value != "" {
+			s.version = value
+			return
+		}
+
 		type pkg struct {
 			Version string `json:"version"`
 		}

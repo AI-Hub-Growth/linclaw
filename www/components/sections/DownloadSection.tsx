@@ -1,31 +1,34 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Apple, Monitor, Package } from "lucide-react"
+import { Globe, Package, Terminal } from "lucide-react"
 import SpotlightCard from "@/components/SpotlightCard"
 import ShinyText from "@/components/ShinyText"
 
 const downloadOptions = [
   {
-    icon: Apple,
-    title: "macOS",
-    description: "MacOS 14+，支持 Intel 和 Apple Silicon",
-    format: "DMG 安装包",
-    color: "from-gray-700 to-gray-800",
-  },
-  {
-    icon: Monitor,
-    title: "Windows",
-    description: "Windows 10+ 64位",
-    format: "EXE 安装包",
-    color: "from-blue-700 to-blue-800",
+    icon: Globe,
+    title: "Web 版",
+    description: "Linux 服务器、Docker、无桌面环境",
+    format: "npm run build && npm run serve",
+    href: "https://github.com/sunqirui1987/linclaw",
+    color: "from-violet-700 to-violet-800",
   },
   {
     icon: Package,
-    title: "源码构建",
-    description: "MIT 开源，自由定制",
-    format: "GitHub 源码",
-    color: "from-violet-700 to-violet-800",
+    title: "发布包",
+    description: "macOS / Windows / Linux 多平台",
+    format: "DMG · EXE · 跨平台包",
+    href: "https://github.com/sunqirui1987/linclaw/releases",
+    color: "from-blue-700 to-blue-800",
+  },
+  {
+    icon: Terminal,
+    title: "一键部署",
+    description: "远程服务器快速安装",
+    format: "curl -fsSL deploy.sh | bash",
+    href: "https://github.com/sunqirui1987/linclaw",
+    color: "from-emerald-700 to-emerald-800",
   },
 ]
 
@@ -33,7 +36,6 @@ export default function DownloadSection() {
   return (
     <section id="download" className="relative py-24 md:py-32 bg-[#0a0a0f]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -55,12 +57,11 @@ export default function DownloadSection() {
           </p>
         </motion.div>
 
-        {/* Download cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {downloadOptions.map((option, index) => (
             <motion.a
               key={option.title}
-              href="https://github.com/sunqirui1987/linx-claw/releases"
+              href={option.href}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
@@ -73,7 +74,7 @@ export default function DownloadSection() {
                 spotlightColor="rgba(99, 102, 241, 0.2)"
               >
                 <div
-                  className={`w-12 h-12 rounded-xl bg-linear-to-br ${option.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${option.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
                 >
                   <option.icon className="w-6 h-6 text-white" />
                 </div>

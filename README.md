@@ -26,6 +26,25 @@
 | 形态 | 适用场景 | 说明 |
 |------|----------|------|
 | **🌐 Web 版** | Linux 服务器、Docker、无桌面环境 | `npm run build && npm run serve`，浏览器访问 `http://IP:1420` |
+| **🖥️ Electron 桌面版** | macOS / Windows / Linux 桌面环境 | 前端 + Go 后端打包到同一个安装包，双击即可运行 |
+| **📦 发布包** | 离线部署、多平台分发 | `npm run release`，输出到 `release/v版本号/` |
+| **🚀 一键部署** | 远程服务器快速安装 | `curl -fsSL .../deploy.sh \| bash`，默认端口 9099 |
+
+### 界面预览
+
+<p align="center">
+  <strong>仪表盘</strong> — OpenClaw 运行状态概览
+</p>
+<p align="center">
+  <img src="docs/image.png" width="800" alt="LinClaw 仪表盘">
+</p>
+
+<p align="center">
+  <strong>消息渠道</strong> — 支持 QQ、Telegram、Discord、飞书、钉钉等接入
+</p>
+<p align="center">
+  <img src="docs/image2.png" width="800" alt="LinClaw 消息渠道">
+</p>
 
 ---
 
@@ -82,7 +101,49 @@ npm run build
 npm run serve            # Go Web 服务，默认 0.0.0.0:1420
 ```
 
-### 4. 跨平台发布包
+### 4. Electron 开发模式
+
+```bash
+npm run electron:dev
+```
+
+这会同时启动：
+
+- Go API 后端（`127.0.0.1:43187`）
+- Vite 前端（`127.0.0.1:1420`）
+- Electron 桌面壳
+
+适合做桌面端联调。管理面板依然使用根目录这套 `Vite + Go`，`www/` 官网不会被打进桌面版。
+
+### 5. Electron 预打包（当前平台）
+
+```bash
+npm run electron:build
+npm run electron:pack
+```
+
+说明：
+
+- `electron:build` 会准备桌面端资源目录 `electron-build/`
+- `electron:pack` 会生成当前平台的 unpacked 应用，便于本机自测
+
+默认输出目录：
+
+- `release/electron/`
+
+### 6. Electron 安装包
+
+```bash
+npm run electron:dist
+```
+
+打包流程会自动：
+
+- 构建前端 `dist/`
+- 编译当前平台 `linclawd`
+- 将前端与 Go 后端一起打进 Electron 安装包
+
+### 7. 跨平台发布包
 
 ```bash
 npm run release
@@ -110,22 +171,55 @@ npm run release -- linux/amd64 windows/amd64
 - `start.sh` 或 `start.cmd`
 - `README-DEPLOY.txt`
 
+### 8. 一键部署（远程服务器）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash
+```
+
+默认安装到 `~/.linclaw-web`，端口 9099。可通过环境变量自定义：
+
+```bash
+CLAWPANEL_PORT=8080 curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash
+```
+
+### 9. 官网（www）开发
+
+`www/` 是 LinClaw 的官方落地页，基于 Next.js 16 + React 19 构建，静态导出。
+
+```bash
+cd www
+pnpm install
+pnpm run dev      # 开发服务器 http://localhost:3000
+pnpm run build    # 静态导出到 out/
+pnpm run start    # 本地预览构建产物
+```
+
+构建产物为纯静态文件，可部署到 Vercel、OSS、GitHub Pages 等。
+
 ---
 
 ## 项目结构
 
 ```
 linclaw/
-├── src/                    # 前端
+├── src/                    # 管理面板前端（Vite + Vanilla JS）
 │   ├── pages/              # 页面（模型、服务、助手、聊天等）
 │   ├── components/        # 通用组件
 │   └── lib/               # API 封装、主题等
 ├── src-go/                 # Go 后端
+├── www/                    # 官网落地页（Next.js + React）
+│   ├── app/                # Next.js App Router
+│   ├── components/        # 官网组件（sections、动效等）
+│   └── public/            # 静态资源
 ├── scripts/
 │   ├── dev.sh             # 开发模式包装
+│   ├── electron-dev.mjs   # Electron 开发模式（Go + Vite + Electron）
+│   ├── build-electron-assets.mjs # Electron 资源准备
 │   ├── release.sh         # 跨平台发布打包
 │   ├── run-vite.js        # Vite 启动包装
 │   └── sync-version.js    # 版本同步
+├── electron/              # Electron 主进程与桌面壳
 ├── build.sh               # Web 版构建
 ├── deploy.sh              # 一键部署
 └── package.json
@@ -135,7 +229,8 @@ linclaw/
 
 | 层级 | 技术 |
 |------|------|
-| 前端 | Vanilla JS + Vite |
+| 管理面板前端 | Vanilla JS + Vite |
+| 官网（www） | Next.js 16 + React 19 + TypeScript + Tailwind CSS |
 | 后端 | Go |
 
 ---

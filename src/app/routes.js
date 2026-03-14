@@ -9,6 +9,7 @@ const pageRoutes = [
   ['/models', () => import('../pages/models.js')],
   ['/agents', () => import('../pages/agents.js')],
   ['/gateway', () => import('../pages/gateway.js')],
+  ['/openai', () => import('../pages/openai.js')],
   ['/memory', () => import('../pages/memory.js')],
   ['/skills', () => import('../pages/skills.js')],
   ['/security', () => import('../pages/security.js')],

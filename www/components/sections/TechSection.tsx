@@ -1,44 +1,44 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
-import { 
-  Bot, 
-  Cloud, 
-  MessageSquare, 
-  Terminal, 
-  Clock, 
+import { motion } from "framer-motion"
+import {
+  Bot,
+  Cloud,
+  MessageSquare,
+  Terminal,
+  Clock,
   Settings,
   Zap,
-  Shield
-} from "lucide-react";
-import SpotlightCard from "@/components/SpotlightCard";
-import ShinyText from "@/components/ShinyText";
+  Shield,
+} from "lucide-react"
+import SpotlightCard from "@/components/SpotlightCard"
+import ShinyText from "@/components/ShinyText"
 
 const techFeatures = [
   {
-    icon: Bot,
-    title: "ReAct Agent",
-    description: "基于 AgentScope 的 ReAct 智能体架构，支持复杂任务分解与多步推理",
-  },
-  {
     icon: Cloud,
     title: "七牛云 MaaS",
-    description: "企业级模型即服务驱动，API Key 即用即走，数据主权自主掌控",
+    description: "300 万 Token 免费额度，OpenAI 兼容接口，API Key 即用即走",
+  },
+  {
+    icon: Bot,
+    title: "Agent 舰队",
+    description: "多 Agent 工作区，支持 ReAct 智能体与复杂任务分解",
   },
   {
     icon: MessageSquare,
     title: "多平台接入",
-    description: "支持钉钉、飞书、QQ、Discord、iMessage 等多种消息渠道",
+    description: "QQ、Telegram、Discord、飞书、钉钉等消息渠道一键接入",
   },
   {
     icon: Terminal,
-    title: "内置工具",
-    description: "Shell、文件操作、浏览器、截图等内置工具开箱即用",
+    title: "Gateway 管理",
+    description: "启停、重启、端口检测，配置备份与恢复",
   },
   {
     icon: Clock,
     title: "定时任务",
-    description: "基于 APScheduler 的定时任务系统，支持 Cron 表达式",
+    description: "基于 Cron 的定时任务系统，自动化工作流",
   },
   {
     icon: Settings,
@@ -53,18 +53,16 @@ const techFeatures = [
   {
     icon: Shield,
     title: "记忆管理",
-    description: "智能记忆压缩与管理，支持长期对话上下文保持",
+    description: "智能记忆压缩，支持长期对话上下文保持",
   },
-];
+]
 
 export default function TechSection() {
   return (
     <section id="tech" className="relative py-24 md:py-32 bg-[#0a0a0f]">
-      {/* Background accent */}
       <div className="absolute inset-0 bg-gradient-to-b from-violet-950/10 via-transparent to-violet-950/10" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -86,7 +84,6 @@ export default function TechSection() {
           </p>
         </motion.div>
 
-        {/* Tech cards grid */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           initial="hidden"
@@ -126,5 +123,5 @@ export default function TechSection() {
         </motion.div>
       </div>
     </section>
-  );
+  )
 }

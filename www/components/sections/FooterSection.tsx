@@ -10,7 +10,7 @@ const footerLinks = {
     { name: "下载安装", href: "#download" },
   ],
   community: [
-    { name: "GitHub", href: "https://github.com/sunqirui1987/linx-claw" },
+    { name: "GitHub", href: "https://github.com/sunqirui1987/linclaw" },
   ],
 };
 
@@ -31,12 +31,12 @@ export default function FooterSection() {
               />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 max-w-sm">
-              让 AI 真正替你做事，
-              支持多平台接入，开源免费，让 AI 触手可及。
+              集成七牛云 AI 大模型广场的 OpenClaw 可视化管理面板，
+              支持多平台接入，开源免费。
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/sunqirui1987/linx-claw"
+                href="https://github.com/sunqirui1987/linclaw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"

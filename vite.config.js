@@ -14,6 +14,7 @@ try {
 } catch {}
 
 const goApiTarget = process.env.LINCLAW_GO_API_TARGET || 'http://127.0.0.1:43187'
+const viteHost = process.env.LINCLAW_VITE_HOST || '127.0.0.1'
 
 export default defineConfig({
   plugins: [],
@@ -22,6 +23,7 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
+    host: viteHost,
     port: 1420,
     strictPort: true,
     proxy: {

@@ -73,5 +73,5 @@ vercel deploy
 
 ## 相关链接
 
-- 主项目：[github.com/sunqirui1987/linx-claw](https://github.com/sunqirui1987/linx-claw)
-- Releases：[github.com/sunqirui1987/linx-claw/releases](https://github.com/sunqirui1987/linx-claw/releases)
+- 主项目：[github.com/sunqirui1987/linclaw](https://github.com/sunqirui1987/linclaw)
+- Releases：[github.com/sunqirui1987/linclaw/releases](https://github.com/sunqirui1987/linclaw/releases)

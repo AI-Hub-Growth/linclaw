@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -79,4 +80,152 @@ func TestHealthAndCommandsEndpoints(t *testing.T) {
 			t.Fatalf("expected read_panel_config in command list")
 		}
 	})
+}
+
+func TestOpenAIModelsEndpointRequiresBearerAuth(t *testing.T) {
+	server := newTestServer(t)
+	if err := server.app.Store.WritePanelConfig(map[string]any{
+		"openaiAdapter": map[string]any{
+			"enabled": true,
+			"apiKey":  "secret-key",
+			"modelId": "xiaolongxia",
+		},
+	}); err != nil {
+		t.Fatalf("write panel config: %v", err)
+	}
+
+	t.Run("missing auth", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/v1/models", nil)
+		rec := httptest.NewRecorder()
+
+		server.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusUnauthorized {
+			t.Fatalf("unexpected status: %d", rec.Code)
+		}
+	})
+
+	t.Run("with auth", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/v1/models", nil)
+		req.Header.Set("Authorization", "Bearer secret-key")
+		rec := httptest.NewRecorder()
+
+		server.ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("unexpected status: %d body=%s", rec.Code, rec.Body.String())
+		}
+
+		var payload struct {
+			Data []struct {
+				ID string `json:"id"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+			t.Fatalf("decode response: %v", err)
+		}
+		if len(payload.Data) != 1 || payload.Data[0].ID != "xiaolongxia" {
+			t.Fatalf("unexpected models payload: %#v", payload.Data)
+		}
+	})
+}
+
+func TestOpenAIChatCompletionsRewritesModelAndInjectsPrompt(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Authorization"); got != "Bearer upstream-secret" {
+			t.Fatalf("unexpected upstream auth: %s", got)
+		}
+
+		var payload map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			t.Fatalf("decode upstream request: %v", err)
+		}
+		if got := payload["model"]; got != "qiniu-test-model" {
+			t.Fatalf("expected upstream model rewrite, got %#v", got)
+		}
+		messages, _ := payload["messages"].([]any)
+		if len(messages) != 2 {
+			t.Fatalf("expected system prompt + user message, got %#v", messages)
+		}
+		first, _ := messages[0].(map[string]any)
+		if first["role"] != "system" {
+			t.Fatalf("expected injected system role, got %#v", first)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"id":     "chatcmpl-upstream",
+			"object": "chat.completion",
+			"model":  "qiniu-test-model",
+			"choices": []map[string]any{
+				{
+					"index": 0,
+					"message": map[string]any{
+						"role":    "assistant",
+						"content": "你好，我是小龙虾。",
+					},
+					"finish_reason": "stop",
+				},
+			},
+		})
+	}))
+	defer upstream.Close()
+
+	server := newTestServer(t)
+	server.openai.client = upstream.Client()
+	if err := server.app.Store.WritePanelConfig(map[string]any{
+		"openaiAdapter": map[string]any{
+			"enabled":              true,
+			"apiKey":               "secret-key",
+			"modelId":              "xiaolongxia",
+			"assistantName":        "小龙虾",
+			"cancelPreviousStream": true,
+			"upstreamBaseUrl":      upstream.URL,
+			"upstreamApiKey":       "upstream-secret",
+			"upstreamModel":        "qiniu-test-model",
+		},
+	}); err != nil {
+		t.Fatalf("write panel config: %v", err)
+	}
+
+	reqBody := `{"model":"xiaolongxia","messages":[{"role":"user","content":"你好"}],"stream":false}`
+	req := httptest.NewRequest(http.MethodPost, "/v1/chat/completions", bytes.NewBufferString(reqBody))
+	req.Header.Set("Authorization", "Bearer secret-key")
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+
+	server.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("unexpected status: %d body=%s", rec.Code, rec.Body.String())
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if got := payload["model"]; got != "xiaolongxia" {
+		t.Fatalf("expected public model in response, got %#v", got)
+	}
+}
+
+func newTestServer(t *testing.T) *Server {
+	t.Helper()
+
+	homeDir := t.TempDir()
+	t.Setenv("HOME", homeDir)
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd: %v", err)
+	}
+	packageRoot := filepath.Clean(filepath.Join(cwd, "..", "..", ".."))
+
+	ctx, err := appctx.New(packageRoot)
+	if err != nil {
+		t.Fatalf("new app context: %v", err)
+	}
+	registry := commands.NewRegistry()
+	commands.RegisterAll(registry)
+	return NewServer(ctx, registry, "dist")
 }

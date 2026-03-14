@@ -16,12 +16,21 @@ type Context struct {
 	StartedAt   time.Time
 }
 
-func New(packageRoot string) (*Context, error) {
+func New(packageRoot string, managedRoot ...string) (*Context, error) {
 	absRoot, err := filepath.Abs(packageRoot)
 	if err != nil {
 		return nil, err
 	}
-	store, err := storage.NewStore(absRoot)
+
+	resolvedManagedRoot := ""
+	if len(managedRoot) > 0 && managedRoot[0] != "" {
+		resolvedManagedRoot, err = filepath.Abs(managedRoot[0])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	store, err := storage.NewStore(absRoot, resolvedManagedRoot)
 	if err != nil {
 		return nil, err
 	}

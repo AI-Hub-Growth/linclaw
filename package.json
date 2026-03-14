@@ -3,6 +3,7 @@
   "version": "0.8.0",
   "private": true,
   "description": "LinClaw - 集成七牛云 AI 大模型广场的 OpenClaw 可视化管理面板",
+  "main": "electron/main.mjs",
   "type": "module",
   "author": "qingchencloud",
   "license": "MIT",
@@ -23,6 +24,10 @@
     "dev": "node scripts/run-vite.js",
     "build": "vite build",
     "build:go": "go build ./src-go/cmd/linclawd",
+    "electron:dev": "node scripts/electron-dev.mjs",
+    "electron:build": "node scripts/build-electron-assets.mjs",
+    "electron:pack": "npm run electron:build && electron-builder --dir",
+    "electron:dist": "npm run electron:build && electron-builder",
     "preview": "vite preview",
     "release": "bash scripts/release.sh",
     "serve": "go run ./src-go/cmd/linclawd --port 1420 --web-root dist",
@@ -35,6 +40,63 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "electron": "^35.1.4",
+    "electron-builder": "^26.0.12",
     "vite": "^6.3.5"
+  },
+  "build": {
+    "appId": "com.qingchencloud.linclaw",
+    "productName": "LinClaw",
+    "directories": {
+      "app": ".",
+      "output": "release/electron"
+    },
+    "npmRebuild": false,
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "electron-build/web",
+        "to": "web"
+      },
+      {
+        "from": "electron-build/bin",
+        "to": "bin"
+      },
+      {
+        "from": "electron-build/meta",
+        "to": "meta"
+      }
+    ],
+    "asar": true,
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "category": "Utility",
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ]
+    }
   }
 }

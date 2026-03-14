@@ -151,10 +151,7 @@ func patchGatewayOrigins(app *appctx.Context) {
 			existing[origin] = struct{}{}
 		}
 	}
-	required := []string{
-		"http://localhost:1420",
-		"http://127.0.0.1:1420",
-	}
+	required := appctx.PanelOrigins()
 	for _, origin := range required {
 		if _, ok := existing[origin]; !ok {
 			allowed = append(allowed, origin)

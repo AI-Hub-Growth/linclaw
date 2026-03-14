@@ -26,6 +26,7 @@ export async function render() {
       <div class="stat-card loading-placeholder"></div>
       <div class="stat-card loading-placeholder"></div>
       <div class="stat-card loading-placeholder"></div>
+      <div class="stat-card loading-placeholder"></div>
     </div>
     <div id="dashboard-overview-container"></div>
     <div class="quick-actions">
@@ -64,6 +65,7 @@ async function loadDashboardData(page) {
     api.getServicesStatus(),
     api.getVersionInfo(),
     api.readOpenclawConfig(),
+    api.getStatus(),
   ])
   const secondaryP = Promise.allSettled([
     api.listAgents(),
@@ -73,11 +75,12 @@ async function loadDashboardData(page) {
   const logsP = api.readLogTail('gateway', 20).catch(() => '')
 
   // 第一波：服务状态 + 版本 + 配置 → 立即渲染统计卡片
-  const [servicesRes, versionRes, configRes] = await coreP
+  const [servicesRes, versionRes, configRes, openaiRes] = await coreP
   const services = servicesRes.status === 'fulfilled' ? servicesRes.value : []
   if (servicesRes.status === 'fulfilled') syncGatewayStatus(services)
   const version = versionRes.status === 'fulfilled' ? versionRes.value : {}
   const config = configRes.status === 'fulfilled' ? configRes.value : null
+  const openaiStatus = openaiRes.status === 'fulfilled' ? openaiRes.value : {}
   if (servicesRes.status === 'rejected') toast('服务状态加载失败', 'error')
   if (versionRes.status === 'rejected') toast('版本信息加载失败', 'error')
 
@@ -98,7 +101,7 @@ async function loadDashboardData(page) {
     if (patched) api.writeOpenclawConfig(config).catch(() => {})
   }
 
-  renderStatCards(page, services, version, [], config)
+  renderStatCards(page, services, version, [], config, openaiStatus)
 
   // 第二波：Agent、MCP、备份 → 更新卡片 + 渲染总览
   const [agentsRes, mcpRes, backupsRes] = await secondaryP
@@ -106,7 +109,7 @@ async function loadDashboardData(page) {
   const mcpConfig = mcpRes.status === 'fulfilled' ? mcpRes.value : null
   const backups = backupsRes.status === 'fulfilled' ? backupsRes.value : []
 
-  renderStatCards(page, services, version, agents, config)
+  renderStatCards(page, services, version, agents, config, openaiStatus)
   renderOverview(page, services, mcpConfig, backups, config, agents)
 
   // 第三波：日志（最低优先级）
@@ -114,7 +117,7 @@ async function loadDashboardData(page) {
   renderLogs(page, logs)
 }
 
-function renderStatCards(page, services, version, agents, config) {
+function renderStatCards(page, services, version, agents, config, openaiStatus = {}) {
   const cardsEl = page.querySelector('#stat-cards')
   const gw = findGatewayService(services)
   const runningCount = services.filter(s => s.running).length
@@ -122,6 +125,9 @@ function renderStatCards(page, services, version, agents, config) {
   const defaultAgent = agents.find(a => a.id === 'main')?.name || 'main'
   const modelCount = config?.models?.providers ? Object.values(config.models.providers).reduce((acc, p) => acc + (p.models?.length || 0), 0) : 0
   const providerCount = config?.models?.providers ? Object.keys(config.models.providers).length : 0
+  const openaiEnabled = openaiStatus?.enabled === true
+  const openaiReady = openaiStatus?.upstream?.ready === true
+  const openaiModelId = openaiStatus?.modelId || 'xiaolongxia'
 
   cardsEl.innerHTML = `
     <div class="stat-card">
@@ -159,6 +165,14 @@ function renderStatCards(page, services, version, agents, config) {
       </div>
       <div class="stat-card-value">${runningCount}/${services.length}</div>
       <div class="stat-card-meta">存活率 ${services.length ? Math.round(runningCount / services.length * 100) : 0}%</div>
+    </div>
+    <div class="stat-card stat-card-clickable" id="card-openai" title="查看服务能力 / OpenAI 协议">
+      <div class="stat-card-header">
+        <span class="stat-card-label">OpenAI 协议</span>
+        <span class="status-dot ${(openaiEnabled && openaiReady) ? 'running' : 'stopped'}"></span>
+      </div>
+      <div class="stat-card-value" style="font-size:var(--font-size-sm)">${openaiEnabled ? '已启用' : '未启用'}</div>
+      <div class="stat-card-meta">${openaiEnabled ? `模型 ${openaiModelId}` : '点击进入配置'}</div>
     </div>
     <div class="stat-card stat-card-clickable" id="card-control-ui" title="打开 OpenClaw 原生控制面板">
       <div class="stat-card-header">
@@ -298,6 +312,13 @@ function bindActions(page) {
 
   // Control UI 卡片点击 → 打开 OpenClaw 原生面板（用事件委托，因为卡片是动态渲染的）
   page.addEventListener('click', async (e) => {
+    const openaiCard = e.target.closest('#card-openai')
+    if (openaiCard) {
+      if (e.target.closest('button')) return
+      navigate('/openai')
+      return
+    }
+
     const card = e.target.closest('#card-control-ui')
     if (!card) return
     if (e.target.closest('button')) return
