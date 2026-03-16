@@ -39,7 +39,9 @@
     "version:sync": "node scripts/sync-version.js",
     "version:set": "node scripts/sync-version.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "openclaw": "^2026.3.13"
+  },
   "devDependencies": {
     "electron": "^35.1.4",
     "electron-builder": "^26.0.12",

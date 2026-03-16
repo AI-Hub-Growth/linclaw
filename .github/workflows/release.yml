@@ -1,127 +1,73 @@
-name: Release
+name: Build & Release
 
 # 触发条件：
-#   - 推送版本标签 (v*) → 构建 Web + Electron 全平台 + 创建 GitHub Release
-#   - 手动触发 → 同上，可选发布为草稿
+#   - 推送版本标签 (v*.*.*)  → 构建全平台 + 创建 GitHub Release
+#   - 手动触发              → 构建全平台（可选是否发布为草稿）
 on:
   push:
     tags:
-      - "v*"
+      - 'v*.*.*'
   workflow_dispatch:
     inputs:
-      tag_name:
-        description: 发布标签，例如 v0.8.0
-        required: true
-        type: string
-      targets:
-        description: 可选，Web 发布目标，留空表示默认全部
-        required: false
-        type: string
-        default: ""
-      prerelease:
-        description: 是否标记为预发布
-        required: false
-        type: boolean
-        default: false
       draft:
-        description: 是否发布为草稿（仅手动触发时生效）
-        required: false
+        description: '发布为草稿 Release'
         type: boolean
         default: true
 
-concurrency:
-  group: release-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name || github.ref_name }}
-  cancel-in-progress: false
-
+# 创建 GitHub Release 需要写权限
 permissions:
   contents: write
 
+# 同一 ref 有新触发时取消旧任务，节省 CI 用量
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  NODE_VERSION: "22"
-  MACOSX_DEPLOYMENT_TARGET: "14.0"
+  MACOSX_DEPLOYMENT_TARGET: '14.0'  # 支持 macOS 14+ (M1/M2 及更新机型)
+  NODE_VERSION: '22'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 架构说明：
+#   - Web 版：Go 后端 + 静态前端，npm run release 产出 tar.gz/zip + SHA256SUMS
+#   - 桌面客户端：Electron + Go 后端，electron-builder 产出 dmg/exe/AppImage
+#   - 每个平台需在原生 runner 上构建
+# ─────────────────────────────────────────────────────────────────────────────
 
 jobs:
-  # ─── Web 版（Go 跨平台 tar.gz/zip）───────────────────────────────────────
+  # ─── Web 版（Go 后端 + 静态前端）──────────────────────────────────────────
   build-web:
-    name: Web Release
+    name: Web 版
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
+      - uses: actions/setup-go@v5
         with:
           go-version-file: src-go/go.mod
           cache-dependency-path: src-go/go.sum
 
-      - name: Ensure archive tools are available
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y zip
+      - name: 安装 zip（Windows 目标打包需要）
+        run: sudo apt-get update && sudo apt-get install -y zip
 
-      - name: Resolve release metadata
-        id: meta
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG_NAME="${{ github.event.inputs.tag_name }}"
-            TARGETS_INPUT="${{ github.event.inputs.targets }}"
-          else
-            TAG_NAME="${{ github.ref_name }}"
-            TARGETS_INPUT=""
-          fi
-
-          VERSION="${TAG_NAME#v}"
-          PKG_VERSION="$(node -p "require('./package.json').version")"
-          if [ "$PKG_VERSION" != "$VERSION" ]; then
-            echo "package.json version ($PKG_VERSION) does not match tag ($VERSION)" >&2
-            exit 1
-          fi
-
-          RELEASE_DIR="${RUNNER_TEMP}/linclaw-release/v${VERSION}"
-          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "release_dir=$RELEASE_DIR" >> "$GITHUB_OUTPUT"
-          {
-            echo "targets_input<<EOF"
-            echo "$TARGETS_INPUT"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Install dependencies
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build release assets
-        shell: bash
+      - name: 构建 Web 版
         env:
-          LINCLAW_RELEASE_DIR: ${{ steps.meta.outputs.release_dir }}
-          TARGETS_INPUT: ${{ steps.meta.outputs.targets_input }}
-        run: |
-          if [ -n "$TARGETS_INPUT" ]; then
-            npm run release -- $TARGETS_INPUT
-          else
-            npm run release
-          fi
+          LINCLAW_RELEASE_DIR: ${{ runner.temp }}/web-release
+        run: npm run release
 
-      - name: Upload web-release artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: web-release
-          path: |
-            ${{ steps.meta.outputs.release_dir }}/*.tar.gz
-            ${{ steps.meta.outputs.release_dir }}/*.zip
-            ${{ steps.meta.outputs.release_dir }}/SHA256SUMS
+          path: ${{ runner.temp }}/web-release/
           if-no-files-found: error
-          retention-days: 14
 
   # ─── macOS ARM64（Apple Silicon）─────────────────────────────────────────
   build-mac-arm64:
@@ -135,21 +81,34 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: src-go/go.mod
+          cache-dependency-path: src-go/go.sum
+
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build frontend
-        run: npm run build
-
-      - name: Build Electron (macOS ARM64)
+      # 需要在仓库 Settings → Secrets 中配置以下密钥以启用签名/公证：
+      #   APPLE_CERT_P12_BASE64  – base64 编码的 Developer ID .p12 证书
+      #   APPLE_CERT_PASSWORD    – .p12 密码
+      #   APPLE_ID               – 用于公证的 Apple ID 邮箱
+      #   APPLE_APP_PASSWORD     – 该 Apple ID 的专用密码
+      #   APPLE_TEAM_ID          – Apple 开发者团队 ID
+      - name: 构建 Electron 应用（macOS ARM64）
+        env:
+          CSC_LINK: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run electron:build && npx electron-builder --mac --arm64
 
       - uses: actions/upload-artifact@v4
         with:
           name: mac-arm64
-          path: |
-            release/electron/*.dmg
-            release/electron/*.zip
+          path: release/electron/*.dmg
           if-no-files-found: error
 
   # ─── macOS x64（Intel）───────────────────────────────────────────────────
@@ -164,21 +123,28 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: src-go/go.mod
+          cache-dependency-path: src-go/go.sum
+
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build frontend
-        run: npm run build
-
-      - name: Build Electron (macOS x64)
+      - name: 构建 Electron 应用（macOS x64）
+        env:
+          CSC_LINK: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run electron:build && npx electron-builder --mac --x64
 
       - uses: actions/upload-artifact@v4
         with:
           name: mac-x64
-          path: |
-            release/electron/*.dmg
-            release/electron/*.zip
+          path: release/electron/*.dmg
           if-no-files-found: error
 
   # ─── Windows x64 ─────────────────────────────────────────────────────────
@@ -193,21 +159,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: src-go/go.mod
+          cache-dependency-path: src-go/go.sum
+
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build frontend
-        run: npm run build
-
-      - name: Build Electron (Windows x64)
+      - name: 构建 Electron 应用（Windows x64）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run electron:build && npx electron-builder --win
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: |
-            release/electron/*.exe
-            release/electron/*.zip
+          path: release/electron/*.exe
           if-no-files-found: error
 
   # ─── Linux x64 ───────────────────────────────────────────────────────────
@@ -222,13 +190,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: src-go/go.mod
+          cache-dependency-path: src-go/go.sum
+
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build frontend
-        run: npm run build
-
-      - name: Build Electron (Linux x64)
+      - name: 构建 Electron 应用（Linux x64）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run electron:build && npx electron-builder --linux
 
       - uses: actions/upload-artifact@v4
@@ -256,9 +228,11 @@ jobs:
       - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name || github.ref_name }}
-          target_commitish: ${{ github.sha }}
-          draft: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.draft || false }}
-          prerelease: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease || false }}
+          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft }}
           generate_release_notes: true
-          files: artifacts/**/*
+          files: |
+            artifacts/web-release/*
+            artifacts/mac-arm64/*
+            artifacts/mac-x64/*
+            artifacts/windows-x64/*
+            artifacts/linux-x64/*

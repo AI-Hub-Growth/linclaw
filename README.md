@@ -88,6 +88,10 @@ npm run release
 
 ### 桌面客户端
 
+**前置要求**：
+- 运行安装包：需已安装并运行 [OpenClaw](https://github.com/1186258278/OpenClawChineseTranslation)，确保 Gateway 默认端口 18789 可用。安装包在打包时已将 `package.json` 的依赖安装到输出目录，用户无需预装 Node.js/npm。
+- 开发/构建：需提前安装 [Node.js](https://nodejs.org/)（>= 18）、npm、OpenClaw。
+
 **下载安装包**：前往 [Releases](https://github.com/AI-Hub-Growth/linclaw/releases) 获取 `.dmg`（macOS）、`.exe`（Windows）、`.AppImage`（Linux）。
 
 **开发模式**：`npm run electron:dev`，同时启动 Go 后端、Vite 前端、Electron 桌面壳，访问 `http://localhost:1420`。
