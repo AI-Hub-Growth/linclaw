@@ -10,7 +10,7 @@ const footerLinks = {
     { name: "下载安装", href: "#download" },
   ],
   community: [
-    { name: "GitHub", href: "https://github.com/sunqirui1987/linclaw" },
+    { name: "GitHub", href: "https://github.com/AI-Hub-Growth/linclaw" },
   ],
 };
 
@@ -36,7 +36,7 @@ export default function FooterSection() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/sunqirui1987/linclaw"
+                href="https://github.com/AI-Hub-Growth/linclaw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"

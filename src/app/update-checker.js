@@ -35,7 +35,7 @@ async function checkGlobalUpdate() {
           ${changelog ? `<span class="update-banner-changelog">· ${changelog}</span>` : ''}
         </div>
         <button class="btn btn-sm" id="btn-update-show-cmd">更新方法</button>
-        <a class="btn btn-sm" href="https://github.com/sunqirui1987/linclaw/releases" target="_blank" rel="noopener">Release Notes</a>
+        <a class="btn btn-sm" href="https://github.com/AI-Hub-Growth/linclaw/releases" target="_blank" rel="noopener">Release Notes</a>
         <button class="update-banner-close" id="btn-update-dismiss" title="忽略此版本">✕</button>
       </div>
     `

@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strings"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/models"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/models"
 )
 
 func registerImplemented(r *Registry, module, name, description string, handler Handler) {

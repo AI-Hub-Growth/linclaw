@@ -11,7 +11,7 @@ const downloadOptions = [
     title: "Web 版",
     description: "Linux 服务器、Docker、无桌面环境",
     format: "npm run build && npm run serve",
-    href: "https://github.com/sunqirui1987/linclaw",
+    href: "https://github.com/AI-Hub-Growth/linclaw",
     color: "from-violet-700 to-violet-800",
   },
   {
@@ -19,7 +19,7 @@ const downloadOptions = [
     title: "发布包",
     description: "macOS / Windows / Linux 多平台",
     format: "DMG · EXE · 跨平台包",
-    href: "https://github.com/sunqirui1987/linclaw/releases",
+    href: "https://github.com/AI-Hub-Growth/linclaw/releases",
     color: "from-blue-700 to-blue-800",
   },
   {
@@ -27,7 +27,7 @@ const downloadOptions = [
     title: "一键部署",
     description: "远程服务器快速安装",
     format: "curl -fsSL deploy.sh | bash",
-    href: "https://github.com/sunqirui1987/linclaw",
+    href: "https://github.com/AI-Hub-Growth/linclaw",
     color: "from-emerald-700 to-emerald-800",
   },
 ]

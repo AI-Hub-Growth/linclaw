@@ -1,11 +1,11 @@
 #!/bin/bash
 # LinClaw Web 版一键部署脚本
 # 适用于 WSL / Docker / 远程服务器
-# 用法: curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash
+# 用法: curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash
 
 set -e
 
-REPO="sunqirui1987/linclaw"
+REPO="AI-Hub-Growth/linclaw"
 INSTALL_DIR="$HOME/.linclaw-web"
 PORT="${CLAWPANEL_PORT:-9099}"
 GO_CACHE_DIR="${LINCLAW_GOCACHE:-${TMPDIR:-/tmp}/linclaw-go-cache}"

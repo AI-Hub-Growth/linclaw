@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/commands"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/commands"
 )
 
 func TestHealthAndCommandsEndpoints(t *testing.T) {

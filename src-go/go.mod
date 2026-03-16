@@ -1,3 +1,3 @@
-module github.com/sunqirui1987/linclaw/src-go
+module github.com/AI-Hub-Growth/linclaw/src-go
 
 go 1.25

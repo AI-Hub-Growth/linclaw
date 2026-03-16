@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sunqirui1987/linclaw/src-go/internal/domain/openclawconfig"
-	"github.com/sunqirui1987/linclaw/src-go/internal/storage"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/domain/openclawconfig"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/storage"
 )
 
 const QiniuEnvFile = ".env"

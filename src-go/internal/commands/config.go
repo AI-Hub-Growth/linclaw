@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/application/configservice"
-	"github.com/sunqirui1987/linclaw/src-go/internal/models"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/application/configservice"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/models"
 )
 
 var execLookPath = exec.LookPath
@@ -492,7 +492,7 @@ func patchModelVision(_ context.Context, app *appctx.Context, _ map[string]any) 
 func checkPanelUpdate(_ context.Context, _ *appctx.Context, _ map[string]any) (any, *models.APIError) {
 	return map[string]any{
 		"latest": nil,
-		"url":    "https://github.com/sunqirui1987/linclaw/releases",
+		"url":    "https://github.com/AI-Hub-Growth/linclaw/releases",
 	}, nil
 }
 

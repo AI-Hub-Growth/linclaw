@@ -7,13 +7,13 @@
   "type": "module",
   "author": "qingchencloud",
   "license": "MIT",
-  "homepage": "https://github.com/sunqirui1987/linclaw",
+  "homepage": "https://github.com/AI-Hub-Growth/linclaw",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sunqirui1987/linclaw.git"
+    "url": "https://github.com/AI-Hub-Growth/linclaw.git"
   },
   "bugs": {
-    "url": "https://github.com/sunqirui1987/linclaw/issues"
+    "url": "https://github.com/AI-Hub-Growth/linclaw/issues"
   },
   "keywords": [
     "openclaw",

@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sunqirui1987/linclaw/src-go/internal/models"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/models"
 )
 
 const (

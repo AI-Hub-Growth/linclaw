@@ -62,6 +62,9 @@ jobs:
           LINCLAW_RELEASE_DIR: ${{ runner.temp }}/linclaw-release
         run: npm run release -- linux/amd64 windows/amd64
 
+      - name: Smoke Electron pack
+        run: npm run electron:pack
+
       - name: Upload release smoke artifacts
         if: always()
         uses: actions/upload-artifact@v4

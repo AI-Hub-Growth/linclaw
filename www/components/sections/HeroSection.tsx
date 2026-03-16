@@ -79,7 +79,7 @@ export default function HeroSection() {
                 <span>立即下载</span>
               </StarBorder>
               <a
-                href="https://github.com/sunqirui1987/linclaw"
+                href="https://github.com/AI-Hub-Growth/linclaw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 rounded-full border border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white transition-colors duration-300 backdrop-blur-sm bg-black/20"

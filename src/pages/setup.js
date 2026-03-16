@@ -299,7 +299,7 @@ function renderInstallSection() {
               <div style="margin-bottom:10px">
                 <div style="font-weight:600;margin-bottom:4px">WSL 中使用 Web 版：</div>
                 <div style="margin-bottom:2px;opacity:0.8">打开 WSL 终端，一键部署 LinClaw Web 版：</div>
-                <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash</code>
+                <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash</code>
                 <div style="margin-top:4px;opacity:0.7">国内用户如无法访问 GitHub：<code style="background:var(--bg-secondary);padding:2px 4px;border-radius:3px;user-select:all">curl -fsSL https://gitee.com/QtCodeCreators/linclaw/raw/main/deploy.sh | bash</code></div>
                 <div style="margin-top:4px;opacity:0.7">部署后在浏览器访问 WSL 的 IP 即可管理。</div>
               </div>
@@ -308,13 +308,13 @@ function renderInstallSection() {
               <div style="font-weight:600;margin-bottom:4px">Docker 容器中使用：</div>
               <div style="margin-bottom:2px;opacity:0.8">在容器内安装 OpenClaw + LinClaw Web 版：</div>
               <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all;margin-bottom:4px">npm i -g @qingchencloud/openclaw-zh</code>
-              <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash</code>
+              <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash</code>
               <div style="margin-top:4px;opacity:0.7">国内镜像：<code style="background:var(--bg-secondary);padding:2px 4px;border-radius:3px;user-select:all">curl -fsSL https://gitee.com/QtCodeCreators/linclaw/raw/main/deploy.sh | bash</code></div>
             </div>
             <div>
               <div style="font-weight:600;margin-bottom:4px">远程服务器：</div>
               <div style="margin-bottom:2px;opacity:0.8">SSH 登录服务器后执行：</div>
-              <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash</code>
+              <code style="display:block;background:var(--bg-secondary);padding:6px 10px;border-radius:4px;user-select:all;word-break:break-all">curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash</code>
               <div style="margin-top:4px;opacity:0.7">国内镜像：<code style="background:var(--bg-secondary);padding:2px 4px;border-radius:3px;user-select:all">curl -fsSL https://gitee.com/QtCodeCreators/linclaw/raw/main/deploy.sh | bash</code></div>
             </div>
           </div>

@@ -7,6 +7,7 @@
 
 - [ ] Frontend
 - [ ] Go API / commands
+- [ ] Electron 桌面客户端
 - [ ] Deploy / release / CI
 - [ ] Docs
 - [ ] Other
@@ -21,6 +22,7 @@
 - [ ] `npm run build`
 - [ ] `go test ./src-go/...`
 - [ ] `go build ./src-go/cmd/linclawd`
+- [ ] 如果改了 Electron，已验证 `npm run electron:pack` 或 `npm run electron:dist`
 - [ ] 如果改了发布链，已验证 `npm run release -- linux/amd64`
 - [ ] 如果改了部署链，已验证 `bash build.sh` 或 `deploy.sh`
 - [ ] 如果改了 UI，已补截图或录屏

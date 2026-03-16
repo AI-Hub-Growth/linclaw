@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/models"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/models"
 )
 
 func registerLogs(r *Registry) {

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
 )
 
 func TestCheckFrontendUpdateFallsBackWhenManifestIsInvalid(t *testing.T) {

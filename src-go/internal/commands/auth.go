@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/auth"
-	"github.com/sunqirui1987/linclaw/src-go/internal/models"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/auth"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/models"
 )
 
 func registerAuth(r *Registry) {

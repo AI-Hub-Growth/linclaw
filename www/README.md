@@ -73,5 +73,5 @@ vercel deploy
 
 ## 相关链接
 
-- 主项目：[github.com/sunqirui1987/linclaw](https://github.com/sunqirui1987/linclaw)
-- Releases：[github.com/sunqirui1987/linclaw/releases](https://github.com/sunqirui1987/linclaw/releases)
+- 主项目：[github.com/AI-Hub-Growth/linclaw](https://github.com/AI-Hub-Growth/linclaw)
+- Releases：[github.com/AI-Hub-Growth/linclaw/releases](https://github.com/AI-Hub-Growth/linclaw/releases)

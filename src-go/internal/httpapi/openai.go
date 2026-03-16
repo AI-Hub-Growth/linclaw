@@ -14,8 +14,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/domain/openclawconfig"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/domain/openclawconfig"
 )
 
 const (

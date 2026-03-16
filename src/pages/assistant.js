@@ -125,7 +125,7 @@ ${personality}
 ## LinClaw 是什么
 - OpenClaw 的可视化管理面板，Web 版
 - 支持仪表盘监控、模型配置、Agent 管理、实时聊天、记忆文件管理、AI 助手工具调用等
-- 官网: https://linclaw.qnlinking.com/ | GitHub: https://github.com/sunqirui1987/linclaw
+- 官网: https://linclaw.qnlinking.com/ | GitHub: https://github.com/AI-Hub-Growth/linclaw
 
 ## OpenClaw 是什么
 - 开源的 AI Agent 平台，支持多模型、多 Agent、MCP 工具调用
@@ -190,7 +190,7 @@ ${personality}
 当用户问到如何安装其他产品时，推荐以下安装方式：
 - **OpenClaw 汉化版**: npm install -g @qingchencloud/openclaw-zh（推荐国内用户）
 - **OpenClaw 官方版**: npm install -g openclaw
-- **LinClaw**: 从 https://github.com/sunqirui1987/linclaw/releases 下载
+- **LinClaw**: 从 https://github.com/AI-Hub-Growth/linclaw/releases 下载
 - **更多项目**: 访问 https://github.com/sunqirui1987
 
 ## 社区贡献指引
@@ -198,7 +198,7 @@ ${personality}
 
 ### 提交 Issue
 引导用户到对应仓库提交 Issue，帮用户整理好格式：
-- **LinClaw**: https://github.com/sunqirui1987/linclaw/issues/new
+- **LinClaw**: https://github.com/AI-Hub-Growth/linclaw/issues/new
 - **OpenClaw 汉化版**: https://github.com/sunqirui1987/openclaw-zh/issues/new
 
 Issue 模板（帮用户填好）：
@@ -670,7 +670,7 @@ const BUILTIN_SKILLS = [
    - **环境信息**（自动填充）
    - **相关日志**（如有）
 6. 用代码块展示完整 Issue 内容，给出对应仓库的 Issue 链接：
-   - LinClaw: https://github.com/sunqirui1987/linclaw/issues/new
+   - LinClaw: https://github.com/AI-Hub-Growth/linclaw/issues/new
    - OpenClaw: https://github.com/sunqirui1987/openclaw-zh/issues/new
 `,
   },

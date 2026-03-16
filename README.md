@@ -24,7 +24,7 @@
   <a href="https://www.qiniu.com/ai/models">
     <img src="https://img.shields.io/badge/七牛云-AI%20大模型广场-F37021?style=flat-square&logo=qiniu" alt="七牛云 AI">
   </a>
-  <a href="https://github.com/sunqirui1987/linclaw/blob/main/LICENSE">
+  <a href="https://github.com/AI-Hub-Growth/linclaw/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License">
   </a>
 </p>
@@ -57,19 +57,19 @@
 **一键部署（远程服务器）**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash
 ```
 
 默认安装到 `~/.linclaw-web`，端口 9099。可通过环境变量自定义：
 
 ```bash
-CLAWPANEL_PORT=8080 curl -fsSL https://raw.githubusercontent.com/sunqirui1987/linclaw/main/deploy.sh | bash
+CLAWPANEL_PORT=8080 curl -fsSL https://raw.githubusercontent.com/AI-Hub-Growth/linclaw/main/deploy.sh | bash
 ```
 
 **本地构建运行**
 
 ```bash
-git clone https://github.com/sunqirui1987/linclaw.git
+git clone https://github.com/AI-Hub-Growth/linclaw.git
 cd linclaw
 npm install
 npm run build
@@ -88,7 +88,7 @@ npm run release
 
 ### 桌面客户端
 
-**下载安装包**：前往 [Releases](https://github.com/sunqirui1987/linclaw/releases) 获取 `.dmg`（macOS）、`.exe`（Windows）、`.AppImage`（Linux）。
+**下载安装包**：前往 [Releases](https://github.com/AI-Hub-Growth/linclaw/releases) 获取 `.dmg`（macOS）、`.exe`（Windows）、`.AppImage`（Linux）。
 
 **开发模式**：`npm run electron:dev`，同时启动 Go 后端、Vite 前端、Electron 桌面壳，访问 `http://localhost:1420`。
 

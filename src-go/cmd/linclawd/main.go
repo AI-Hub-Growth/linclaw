@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
-	"github.com/sunqirui1987/linclaw/src-go/internal/commands"
-	"github.com/sunqirui1987/linclaw/src-go/internal/httpapi"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/commands"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/httpapi"
 )
 
 func main() {

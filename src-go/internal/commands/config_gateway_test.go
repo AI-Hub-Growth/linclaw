@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	appctx "github.com/sunqirui1987/linclaw/src-go/internal/app"
+	appctx "github.com/AI-Hub-Growth/linclaw/src-go/internal/app"
 )
 
 func TestInstallGatewayReturnsHelpfulErrorWhenCLIMissing(t *testing.T) {

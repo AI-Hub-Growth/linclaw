@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/sunqirui1987/linclaw/src-go/internal/auth"
-	"github.com/sunqirui1987/linclaw/src-go/internal/storage"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/auth"
+	"github.com/AI-Hub-Growth/linclaw/src-go/internal/storage"
 )
 
 type Context struct {
