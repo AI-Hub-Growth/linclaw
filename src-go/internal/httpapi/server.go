@@ -75,11 +75,15 @@ func (s *Server) handleAPI(w http.ResponseWriter, r *http.Request) {
 
 	switch cmd {
 	case "health":
-		writeJSON(w, http.StatusOK, map[string]any{
+		resp := map[string]any{
 			"ok":      true,
 			"ts":      time.Now().UnixMilli(),
 			"version": s.app.Store.PackageVersion(),
-		})
+		}
+		if strings.TrimSpace(os.Getenv("LINCLAW_ELECTRON_PACKAGED")) == "1" {
+			resp["electronPackaged"] = true
+		}
+		writeJSON(w, http.StatusOK, resp)
 		return
 	case "commands":
 		writeJSON(w, http.StatusOK, map[string]any{

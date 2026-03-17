@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
@@ -36,6 +37,8 @@ func main() {
 
 	registry := commands.NewRegistry()
 	commands.RegisterAll(registry)
+
+	commands.RunElectronFirstRunInstall(context.Background(), ctx)
 
 	addr := *host + ":" + *port
 	server := httpapi.NewServer(ctx, registry, filepath.Clean(*webRoot))

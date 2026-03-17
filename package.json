@@ -20,6 +20,9 @@
     "ai-agent",
     "management-panel"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "node scripts/run-vite.js",
     "build": "vite build",
@@ -39,7 +42,7 @@
     "version:sync": "node scripts/sync-version.js",
     "version:set": "node scripts/sync-version.js"
   },
-  "dependencies": {
+  "optionalDependencies": {
     "openclaw": "^2026.3.13"
   },
   "devDependencies": {

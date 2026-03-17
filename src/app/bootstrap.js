@@ -11,6 +11,7 @@ import {
   onGuardianGiveUp,
   onInstanceChange,
   refreshGatewayStatus,
+  setElectronPackaged,
   startGatewayPoll,
 } from '../lib/app-state.js'
 import { findGatewayService } from '../lib/service-status.js'
@@ -22,14 +23,41 @@ import { startAIDrawerBootstrap } from './ai-drawer-bootstrap.js'
 import {
   checkAuth,
   hideSplash,
+  removeElectronInitOverlay,
   showBackendDownOverlay,
   showDefaultPasswordBanner,
+  showElectronInitOverlay,
   showLoginOverlay,
 } from './startup-ui.js'
-import { checkBackendHealth } from '../lib/http-client.js'
+import { checkBackendHealth, getHealthInfo, invalidateCommandCache } from '../lib/http-client.js'
 import { startGlobalUpdateChecker } from './update-checker.js'
 
 const { config: configApi, service: serviceApi } = featureServices
+
+const POLL_INTERVAL_MS = 2000
+
+async function pollUntilReadyOrTimeout(timeoutMs) {
+  const startedAt = Date.now()
+  const statusEl = document.getElementById('electron-init-status')
+
+  const setStatus = (text) => {
+    if (statusEl) statusEl.textContent = text
+  }
+
+  while (Date.now() - startedAt < timeoutMs) {
+    setStatus('检测环境...')
+    invalidateCommandCache('check_installation', 'get_services_status')
+    await detectOpenclawStatus()
+    if (isOpenclawReady()) {
+      return { ready: true }
+    }
+    setStatus('等待安装完成，请稍候...')
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS))
+  }
+
+  setStatus('初始化超时，将跳转到手动设置')
+  return { ready: false }
+}
 
 export async function startLinclawApp({ sidebar, content }) {
   const backendOk = await checkBackendHealth()
@@ -61,6 +89,26 @@ async function bootShell({ sidebar, content }) {
   renderSidebar(sidebar)
 
   if (!isOpenclawReady()) {
+    const healthInfo = await getHealthInfo()
+    const electronPackaged = healthInfo?.electronPackaged === true
+
+    if (electronPackaged) {
+      setElectronPackaged(true)
+      showElectronInitOverlay()
+      const { ready } = await pollUntilReadyOrTimeout(300000)
+      removeElectronInitOverlay()
+      if (ready) {
+        await detectOpenclawStatus()
+        renderSidebar(sidebar)
+        setDefaultRoute('/dashboard')
+        navigate('/dashboard')
+      } else {
+        setDefaultRoute('/setup')
+        navigate('/setup')
+      }
+      return
+    }
+
     setDefaultRoute('/setup')
     navigate('/setup')
     return

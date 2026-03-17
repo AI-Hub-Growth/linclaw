@@ -3,7 +3,7 @@
  */
 import { navigate, getCurrentRoute, reloadCurrentRoute } from '../router.js'
 import { toggleTheme, getTheme } from '../lib/theme.js'
-import { isOpenclawReady, getActiveInstance, switchInstance, onInstanceChange } from '../lib/app-state.js'
+import { isOpenclawReady, isElectronPackaged, getActiveInstance, switchInstance, onInstanceChange } from '../lib/app-state.js'
 import { api } from '../lib/api/feature-services.js'
 import { toast } from './toast.js'
 import { version as APP_VERSION } from '../../package.json'
@@ -57,6 +57,22 @@ const NAV_ITEMS_SETUP = [
     section: '',
     items: [
       { route: '/setup', label: '初始设置', icon: 'setup' },
+      { route: '/assistant', label: '小龙虾助手', icon: 'assistant' },
+    ]
+  },
+  {
+    section: '',
+    items: [
+      { route: '/chat-debug', label: '系统诊断', icon: 'debug' },
+      { route: '/about', label: '关于', icon: 'about' },
+    ]
+  }
+]
+
+const NAV_ITEMS_ELECTRON_INIT = [
+  {
+    section: '',
+    items: [
       { route: '/assistant', label: '小龙虾助手', icon: 'assistant' },
     ]
   },
@@ -134,7 +150,9 @@ export function renderSidebar(el) {
     <nav class="sidebar-nav">
   `
 
-  const navItems = isOpenclawReady() ? NAV_ITEMS_FULL : NAV_ITEMS_SETUP
+  const navItems = isOpenclawReady()
+    ? NAV_ITEMS_FULL
+    : (isElectronPackaged() ? NAV_ITEMS_ELECTRON_INIT : NAV_ITEMS_SETUP)
 
   for (const section of navItems) {
     html += `<div class="nav-section">

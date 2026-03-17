@@ -32,6 +32,47 @@ export function hideSplash() {
   setTimeout(() => splash.remove(), 500)
 }
 
+/**
+ * Shows "正在初始化环境" overlay for Electron packaged first run.
+ */
+export function showElectronInitOverlay() {
+  if (document.getElementById('electron-init-overlay')) return
+
+  hideSplash()
+
+  const overlay = document.createElement('div')
+  overlay.id = 'electron-init-overlay'
+  overlay.innerHTML = `
+    <div class="login-card" style="text-align:center">
+      ${logoSvg}
+      <div class="login-title">正在初始化环境</div>
+      <div class="login-desc" style="line-height:1.8">
+        首次启动需要下载 Node.js 和 OpenClaw，请稍候…<br>
+        <span style="font-size:12px;color:var(--text-tertiary)">通常需要 1–3 分钟，请耐心等待</span>
+      </div>
+      <div style="background:var(--bg-tertiary);border-radius:var(--radius-md,8px);padding:14px 18px;margin:16px 0;text-align:center">
+        <div class="sp-bar" style="width:120px;height:3px;border-radius:2px;overflow:hidden;background:rgba(15,118,110,0.15);margin:0 auto">
+          <div class="sp-bar-inner" style="width:40%;height:100%;border-radius:2px;background:linear-gradient(90deg,#0f766e,#c97732);animation:sp-slide 1.2s ease-in-out infinite"></div>
+        </div>
+      </div>
+      <div id="electron-init-status" style="font-size:12px;color:var(--text-tertiary);margin-top:12px"></div>
+      <div style="margin-top:16px;font-size:11px;color:#aaa">
+        <a href="https://linclaw.qnlinking.com/" target="_blank" rel="noopener" style="color:#aaa;text-decoration:none">https://linclaw.qnlinking.com/</a>
+        <span style="margin:0 6px">&middot;</span>v${APP_VERSION}
+      </div>
+    </div>
+  `
+  document.body.appendChild(overlay)
+}
+
+export function removeElectronInitOverlay() {
+  const overlay = document.getElementById('electron-init-overlay')
+  if (overlay) {
+    overlay.classList.add('hide')
+    setTimeout(() => overlay.remove(), 400)
+  }
+}
+
 export async function checkAuth() {
   try {
     const resp = await fetch('/__api/auth_check', {

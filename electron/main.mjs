@@ -125,6 +125,7 @@ async function startBackend() {
     LINCLAW_APP_VERSION: app.getVersion(),
     LINCLAW_PANEL_ORIGIN: primaryOrigin(backendPort),
     LINCLAW_ALLOWED_ORIGINS: allowedOrigins(backendPort).join(','),
+    ...(app.isPackaged ? { LINCLAW_ELECTRON_PACKAGED: '1' } : {}),
   }
 
   backendProcess = spawn(backendBinaryPath(), backendArgs(backendPort), {
@@ -143,7 +144,8 @@ async function startBackend() {
     app.quit()
   })
 
-  await waitForHTTP(`${primaryOrigin(backendPort)}/__api/health`, 20000, {
+  const healthTimeout = app.isPackaged ? 300000 : 20000
+  await waitForHTTP(`${primaryOrigin(backendPort)}/__api/health`, healthTimeout, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: '{}',

@@ -119,4 +119,21 @@ export async function checkBackendHealth() {
   }
 }
 
+/** Returns health response including electronPackaged when running in Electron. */
+export async function getHealthInfo() {
+  try {
+    const resp = await fetch('/__api/health', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    })
+    setBackendOnline(resp.ok)
+    if (!resp.ok) return null
+    return resp.json()
+  } catch {
+    setBackendOnline(false)
+    return null
+  }
+}
+
 export { requestJson }

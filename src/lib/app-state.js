@@ -10,6 +10,7 @@ import {
 import { getGatewayServiceSnapshot } from './service-status.js'
 
 let _openclawReady = false
+let _electronPackaged = false
 let _gatewayRunning = false
 let _gatewayService = getGatewayServiceSnapshot([])
 let _platform = ''  // 'macos' | 'win32' | ...
@@ -70,6 +71,10 @@ export function getPlatform() {
 export function isMacPlatform() {
   return _platform === 'macos'
 }
+
+/** Electron 打包版（桌面端） */
+export function setElectronPackaged(v) { _electronPackaged = !!v }
+export function isElectronPackaged() { return _electronPackaged }
 
 /** 部署模式 */
 export function getDeployMode() { return _deployMode }
