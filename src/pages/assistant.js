@@ -1388,10 +1388,14 @@ async function syncAssistantApiKeyFromModelConfig() {
     const config = await api.readOpenclawConfig()
     const provider = getQiniuProviderFromOpenClawConfig(config)
     const nextApiKey = provider?.apiKey || ''
-    const changed = _config.apiKey !== nextApiKey
+    let changed = _config.apiKey !== nextApiKey
     _config.baseUrl = QINIU.baseUrl
     _config.apiType = QINIU.apiType
     _config.apiKey = nextApiKey
+    if (!_config.model && provider?.models?.length > 0) {
+      _config.model = provider.models[0]
+      changed = true
+    }
     if (changed) saveConfig()
     return provider
   } catch (err) {
