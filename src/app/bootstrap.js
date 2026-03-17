@@ -109,8 +109,9 @@ async function bootShell({ sidebar, content }) {
       return
     }
 
-    setDefaultRoute('/setup')
-    navigate('/setup')
+    // Web 版本：直接进入 dashboard，setup 可手动进入
+    setDefaultRoute('/chat')
+    navigate('/chat')
     return
   }
 

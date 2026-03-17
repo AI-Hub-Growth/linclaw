@@ -69,6 +69,25 @@ const NAV_ITEMS_SETUP = [
   }
 ]
 
+// ✏️ 自定义菜单 — 按需编辑，route 值需与 NAV_ITEMS_FULL 保持一致
+const NAV_ITEMS_CUSTOM = [
+  {
+    section: '概览',
+    items: [
+      { route: '/chat', label: '实时聊天', icon: 'chat' },
+      { route: '/assistant', label: '小龙虾助手', icon: 'assistant' },
+    ]
+  },
+  {
+    section: '配置',
+    items: [
+      { route: '/channels', label: '消息渠道', icon: 'channels' },
+      { route: '/cron', label: '定时任务', icon: 'clock' },
+      { route: '/skills', label: 'Skills', icon: 'skills' },
+    ]
+  }
+]
+
 const NAV_ITEMS_ELECTRON_INIT = [
   {
     section: '',
@@ -150,9 +169,9 @@ export function renderSidebar(el) {
     <nav class="sidebar-nav">
   `
 
-  const navItems = isOpenclawReady()
-    ? NAV_ITEMS_FULL
-    : (isElectronPackaged() ? NAV_ITEMS_ELECTRON_INIT : NAV_ITEMS_SETUP)
+  const navItems = isElectronPackaged()
+    ? (isOpenclawReady() ? NAV_ITEMS_FULL : NAV_ITEMS_ELECTRON_INIT)
+    : NAV_ITEMS_CUSTOM
 
   for (const section of navItems) {
     html += `<div class="nav-section">
