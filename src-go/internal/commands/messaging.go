@@ -1,7 +1,10 @@
 package commands
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -221,11 +224,58 @@ func toggleMessagingPlatform(ctx context.Context, app *appctx.Context, args map[
 }
 
 func verifyBotToken(_ context.Context, _ *appctx.Context, args map[string]any) (any, *models.APIError) {
+	platform := optionalString(args, "platform")
+	form, _ := args["form"].(map[string]any)
+
+	if platform == "feishu" {
+		return verifyFeishuToken(form)
+	}
+
 	return map[string]any{
 		"ok":       true,
-		"message":  "Go 云端版当前未内置远程平台凭证校验，可先保存配置后由 Gateway 实际验证",
-		"platform": optionalString(args, "platform"),
+		"message":  "当前平台暂不支持凭证预校验，可先保存配置后由 Gateway 实际验证",
+		"platform": platform,
 	}, nil
+}
+
+func verifyFeishuToken(form map[string]any) (any, *models.APIError) {
+	appID := strings.TrimSpace(optionalString(form, "appId"))
+	appSecret := strings.TrimSpace(optionalString(form, "appSecret"))
+	domain := strings.TrimSpace(optionalString(form, "domain"))
+	if domain == "" {
+		domain = "feishu"
+	}
+
+	if appID == "" || appSecret == "" {
+		return map[string]any{"ok": false, "message": "App ID 和 App Secret 不能为空"}, nil
+	}
+
+	var baseURL string
+	if domain == "lark" {
+		baseURL = "https://open.larksuite.com"
+	} else {
+		baseURL = "https://open.feishu.cn"
+	}
+
+	body, _ := json.Marshal(map[string]string{"app_id": appID, "app_secret": appSecret})
+	resp, err := http.Post(baseURL+"/open-apis/auth/v3/tenant_access_token/internal", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return map[string]any{"ok": false, "message": "网络请求失败: " + err.Error()}, nil
+	}
+	defer resp.Body.Close()
+
+	var result map[string]any
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return map[string]any{"ok": false, "message": "响应解析失败"}, nil
+	}
+
+	code, _ := result["code"].(float64)
+	if code != 0 {
+		msg, _ := result["msg"].(string)
+		return map[string]any{"ok": false, "message": "凭证无效: " + msg}, nil
+	}
+
+	return map[string]any{"ok": true, "message": "App ID 和 App Secret 校验通过"}, nil
 }
 
 func listConfiguredPlatforms(_ context.Context, app *appctx.Context, _ map[string]any) (any, *models.APIError) {

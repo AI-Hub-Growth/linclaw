@@ -59,7 +59,7 @@ const PLATFORM_REGISTRY = {
     fields: [
       { key: 'appId', label: 'App ID', placeholder: 'cli_xxxxxxxxxx', required: true },
       { key: 'appSecret', label: 'App Secret', placeholder: '应用密钥', secret: true, required: true },
-      { key: 'domain', label: '域名', placeholder: 'feishu（国际版选 lark）', required: false },
+      { key: 'domain', label: '域名', type: 'select', options: [{ value: 'feishu', label: '飞书（国内版）' }, { value: 'lark', label: 'Lark（国际版）' }], defaultValue: 'feishu', required: false },
     ],
     pluginRequired: '@openclaw/feishu@latest',
     pluginId: 'feishu',
@@ -294,16 +294,19 @@ async function openConfigDialog(pid, page, state) {
   `
 
   const fieldsHtml = reg.fields.map((f, i) => {
-    const val = existing[f.key] || ''
-    return `
-      <div class="form-group">
-        <label class="form-label">${f.label}${f.required ? ' *' : ''}</label>
-        <div style="display:flex;gap:8px">
+    const val = existing[f.key] || f.defaultValue || ''
+    const inputHtml = f.type === 'select'
+      ? `<select class="form-input" name="${f.key}">${f.options.map(o => `<option value="${escapeAttr(o.value)}" ${val === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}</select>`
+      : `<div style="display:flex;gap:8px">
           <input class="form-input" name="${f.key}" type="${f.secret ? 'password' : 'text'}"
                  value="${escapeAttr(val)}" placeholder="${f.placeholder || ''}"
                  ${i === 0 ? 'autofocus' : ''} style="flex:1">
           ${f.secret ? `<button type="button" class="btn btn-sm btn-secondary toggle-vis" data-field="${f.key}">显示</button>` : ''}
-        </div>
+        </div>`
+    return `
+      <div class="form-group">
+        <label class="form-label">${f.label}${f.required ? ' *' : ''}</label>
+        ${inputHtml}
       </div>
     `
   }).join('')
@@ -337,7 +340,6 @@ async function openConfigDialog(pid, page, state) {
     ${isEdit ? `<div style="background:var(--accent-muted);color:var(--accent);padding:8px 14px;border-radius:var(--radius-md);font-size:var(--font-size-sm);margin-bottom:var(--space-md)">当前已有配置，修改后点击保存即可覆盖</div>` : ''}
     <form id="${formId}">
       ${fieldsHtml}
-      ${agentBindingHtml}
     </form>
     ${pairingHtml}
     <div id="verify-result" style="margin-top:var(--space-sm)"></div>
@@ -458,17 +460,18 @@ async function openConfigDialog(pid, page, state) {
     resultEl.innerHTML = ''
     try {
       const res = await api.verifyBotToken(pid, form)
-      if (res.valid) {
+      if (res.valid || res.ok) {
         const details = (res.details || []).join(' · ')
+        const msg = res.message || '凭证有效'
         resultEl.innerHTML = `
           <div style="background:var(--success-muted);color:var(--success);padding:10px 14px;border-radius:var(--radius-md);font-size:var(--font-size-sm)">
-            ${icon('check', 14)} 凭证有效${details ? ' — ' + details : ''}
+            ${icon('check', 14)} ${details ? details : msg}
           </div>`
       } else {
-        const errs = (res.errors || ['校验失败']).join('<br>')
+        const errs = (res.errors || [res.message] || ['校验失败']).filter(Boolean).join('<br>')
         resultEl.innerHTML = `
           <div style="background:var(--error-muted, #fee2e2);color:var(--error);padding:10px 14px;border-radius:var(--radius-md);font-size:var(--font-size-sm)">
-            ${icon('x', 14)} ${errs}
+            ${icon('x', 14)} ${errs || '校验失败'}
           </div>`
       }
     } catch (e) {
