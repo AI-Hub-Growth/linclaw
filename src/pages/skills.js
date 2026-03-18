@@ -67,15 +67,10 @@ function renderSkills(el, data) {
     <div class="clawhub-toolbar">
       <input class="input clawhub-search-input" id="skill-filter-input" placeholder="过滤 Skills..." type="text">
       <button class="btn btn-secondary btn-sm" data-action="skill-retry">刷新</button>
-      <a class="btn btn-secondary btn-sm" href="https://clawhub.ai/skills" target="_blank" rel="noopener">ClawHub</a>
       ${!cliAvailable ? '<span class="form-hint" style="margin-left:auto;color:var(--warning)">CLI 不可用，仅显示本地扫描结果</span>' : ''}
     </div>
 
-    <div class="skills-summary" style="margin-bottom:var(--space-lg);color:var(--text-secondary);font-size:var(--font-size-sm)">
-      共 ${skills.length} 个 Skills: ${summary}
-    </div>
-
-    ${eligible.length ? `
+${eligible.length ? `
     <div class="clawhub-panel" style="margin-bottom:var(--space-lg)">
       <div class="clawhub-panel-title" style="color:var(--success)">✓ 可用 (${eligible.length})</div>
       <div class="clawhub-list skills-scroll-area skills-trending-scroll" id="skills-eligible">
@@ -83,16 +78,6 @@ function renderSkills(el, data) {
       </div>
     </div>` : ''}
 
-    ${missing.length ? `
-    <div class="clawhub-panel" style="margin-bottom:var(--space-lg)">
-      <div class="clawhub-panel-title" style="color:var(--warning);display:flex;align-items:center;gap:var(--space-sm)">
-        <span>✗ 缺少依赖 (${missing.length})</span>
-        <button class="btn btn-secondary btn-sm" data-action="skill-ai-fix" style="font-size:var(--font-size-xs);padding:2px 8px">让 AI 助手帮我安装</button>
-      </div>
-      <div class="clawhub-list skills-scroll-area skills-installed-scroll" id="skills-missing">
-        ${missing.map(s => renderSkillCard(s, 'missing')).join('')}
-      </div>
-    </div>` : ''}
 
     ${disabled.length ? `
     <div class="clawhub-panel" style="margin-bottom:var(--space-lg)">
@@ -120,16 +105,6 @@ function renderSkills(el, data) {
 
     <div id="skill-detail-area"></div>
 
-    <div class="clawhub-panel" style="margin-top:var(--space-lg)">
-      <div class="clawhub-panel-title">从 ClawHub 安装新 Skill</div>
-      <div class="clawhub-toolbar" style="margin-bottom:var(--space-sm)">
-        <input class="input clawhub-search-input" id="clawhub-search-input" placeholder="搜索 ClawHub，如 weather / github / summarize" type="text">
-        <button class="btn btn-primary btn-sm" data-action="clawhub-search">搜索</button>
-      </div>
-      <div id="clawhub-results" class="clawhub-list skills-scroll-area" style="max-height:320px">
-        <div class="clawhub-empty">输入关键词搜索 ClawHub 社区 Skills</div>
-      </div>
-    </div>
   `
 
   // 实时过滤
