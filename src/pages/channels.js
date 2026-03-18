@@ -11,6 +11,7 @@ import { icon } from '../lib/icons.js'
 
 const PLATFORM_REGISTRY = {
   qqbot: {
+    hidden: true,
     label: 'QQ 机器人',
     iconName: 'message-square',
     desc: '内置 QQ 机器人接入能力，通过 QQ 开放平台快速启用',
@@ -29,6 +30,7 @@ const PLATFORM_REGISTRY = {
     pluginRequired: '@sliverp/qqbot@latest',
   },
   telegram: {
+    hidden: true,
     label: 'Telegram',
     iconName: 'send',
     desc: '通过 BotFather 创建机器人，用 Bot Token 接入',
@@ -65,6 +67,7 @@ const PLATFORM_REGISTRY = {
     pluginId: 'feishu',
   },
   dingtalk: {
+    hidden: true,
     label: '钉钉',
     iconName: 'message-square',
     desc: '钉钉企业内部应用 + 机器人 Stream 模式接入',
@@ -91,6 +94,7 @@ const PLATFORM_REGISTRY = {
     pairingChannel: 'dingtalk-connector',
   },
   discord: {
+    hidden: true,
     label: 'Discord',
     iconName: 'message-circle',
     desc: '通过 Discord Developer Portal 创建 Bot 应用接入',
@@ -117,7 +121,7 @@ export async function render() {
   page.innerHTML = `
     <div class="page-header">
       <h1 class="page-title">消息渠道</h1>
-      <p class="page-desc">支持 QQ、Telegram、Discord、飞书、钉钉等消息渠道接入</p>
+      <p class="page-desc">支持飞书消息渠道接入</p>
     </div>
     <div id="platforms-configured" style="margin-bottom:var(--space-lg)"></div>
     <div class="config-section">
@@ -224,7 +228,7 @@ function renderAvailable(page, state) {
   const el = page.querySelector('#platforms-available')
   const configuredIds = new Set(state.configured.map(p => p.id))
 
-  el.innerHTML = Object.entries(PLATFORM_REGISTRY).map(([pid, reg]) => {
+  el.innerHTML = Object.entries(PLATFORM_REGISTRY).filter(([, reg]) => !reg.hidden).map(([pid, reg]) => {
     const done = configuredIds.has(pid)
     return `
       <button class="platform-pick ${done ? 'configured' : ''}" data-pid="${pid}">

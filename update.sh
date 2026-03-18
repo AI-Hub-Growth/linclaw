@@ -13,8 +13,8 @@ GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o linclawd-linux ./src-go/cmd/li
 echo "==> [3/4] Uploading to ${REMOTE}..."
 rsync -av --delete dist/ ${REMOTE}:${REMOTE_DIR}/dist/
 ssh ${REMOTE} "systemctl stop linclaw"
-scp linclawd-linux ${REMOTE}:${REMOTE_DIR}/linclawd
-ssh ${REMOTE} "chmod +x ${REMOTE_DIR}/linclawd"
+scp linclawd-linux ${REMOTE}:/tmp/linclawd
+ssh ${REMOTE} "sudo mv /tmp/linclawd ${REMOTE_DIR}/linclawd && sudo chmod +x ${REMOTE_DIR}/linclawd"
 
 echo "==> [4/4] Starting service..."
 ssh ${REMOTE} "systemctl start linclaw && systemctl status linclaw --no-pager -l"

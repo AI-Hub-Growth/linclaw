@@ -4,3 +4,4 @@ electron-build
 release
 .linclaw
 linclawd-linux
+src-go/linclawd

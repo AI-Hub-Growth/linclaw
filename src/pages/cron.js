@@ -123,6 +123,7 @@ async function fetchJobs(page, state) {
 
     state.jobs = jobs.map(j => ({
       id: j.name || j.id,
+      rawId: j.id,
       name: j.name || j.id || '未命名',
       description: j.description || '',
       message: j.payload?.message || j.payload?.text || '',
@@ -248,7 +249,7 @@ function renderList(page, state) {
       const btn = e.currentTarget
       btn.disabled = true
       try {
-        await wsClient.request('cron.run', { name: jid })
+        await wsClient.request('cron.run', { id: job.rawId || job.id })
         toast('任务已触发执行', 'success')
         setTimeout(() => fetchJobs(page, state), 2000)
       } catch (err) { toast('触发失败: ' + err, 'error') }
