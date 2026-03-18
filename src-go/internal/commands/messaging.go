@@ -384,6 +384,7 @@ func buildMessagingEntry(platform string, form map[string]any, config map[string
 		entry["appId"] = appID
 		entry["appSecret"] = appSecret
 		entry["connectionMode"] = "websocket"
+		entry["dmPolicy"] = "open"
 		if domain := strings.TrimSpace(optionalString(form, "domain")); domain != "" {
 			entry["domain"] = domain
 		}

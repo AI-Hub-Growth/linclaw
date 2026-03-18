@@ -53,7 +53,7 @@ const PLATFORM_REGISTRY = {
       '进入<b>权限管理</b>，参照 <a href="https://open.larkoffice.com/document/server-docs/application-scope/scope-list" target="_blank" style="color:var(--accent);text-decoration:underline">权限列表</a> 开通所需权限（<code>im:message</code> 等）',
       '进入<b>事件订阅</b>，选择<b>使用长连接（WebSocket）</b>模式，订阅<b>接收消息</b>和<b>卡片回调</b>事件。如有 user access token 开关请打开',
       '将 App ID 和 App Secret 填入下方表单，校验后保存。LinClaw 会自动安装飞书插件并写入配置',
-      '保存后在飞书中向机器人发消息，获取配对码；你可以直接在下方“配对审批”区域粘贴配对码完成绑定，也可以在终端执行 <code>openclaw pairing approve feishu &lt;配对码&gt; --notify</code>',
+      '保存后在飞书中向机器人发消息即可',
     ],
     guideFooter: '<div style="margin-top:8px;font-size:var(--font-size-xs);color:var(--text-tertiary)">国际版 Lark 用户请将域名切换为 <b>lark</b>。详细教程：<a href="https://www.feishu.cn/content/article/7613711414611463386" target="_blank" style="color:var(--accent);text-decoration:underline">OpenClaw 飞书官方插件使用指南</a></div>',
     fields: [
@@ -63,8 +63,6 @@ const PLATFORM_REGISTRY = {
     ],
     pluginRequired: '@openclaw/feishu@latest',
     pluginId: 'feishu',
-    pairingChannel: 'feishu',
-    pairingNotify: true,
   },
   dingtalk: {
     label: '钉钉',
