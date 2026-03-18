@@ -148,7 +148,9 @@ func skillsClawHubInstall(ctx context.Context, app *appctx.Context, args map[str
 	output, err := runCombinedOutput(ctx, clawhubPath, "install", slug, "--workdir", skillsDir, "--dir", "skills")
 	message := strings.TrimSpace(string(output))
 	if err != nil {
-		if message == "" {
+		if ctx.Err() == context.DeadlineExceeded {
+			message = "安装超时：ClawHub 服务可能正在限速，请稍后重试"
+		} else if message == "" {
 			message = err.Error()
 		}
 		return nil, models.NewAPIError(500, "INSTALL_FAILED", message)

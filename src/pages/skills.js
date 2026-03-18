@@ -130,16 +130,6 @@ function renderSkills(el, data) {
         <div class="clawhub-empty">输入关键词搜索 ClawHub 社区 Skills</div>
       </div>
     </div>
-
-    <div class="clawhub-panel skills-tips-panel" style="margin-top:var(--space-lg)">
-      <div class="clawhub-panel-title">关于 Skills</div>
-      <div class="skills-tip-list">
-        <div class="skills-tip-item"><strong>捆绑 Skills</strong>：随 OpenClaw 安装包自带，无需额外安装</div>
-        <div class="skills-tip-item"><strong>自定义 Skills</strong>：将 SKILL.md 放入 <code>~/.openclaw/skills/&lt;name&gt;/</code> 目录即可</div>
-        <div class="skills-tip-item"><strong>依赖检查</strong>：某些 Skills 需要特定命令行工具（如 gh、curl）才能使用</div>
-        <div class="skills-tip-item"><strong>浏览更多</strong>：访问 <a href="https://clawhub.ai/skills" target="_blank" rel="noopener">ClawHub</a> 发现社区共享的 Skills</div>
-      </div>
-    </div>
   `
 
   // 实时过滤
