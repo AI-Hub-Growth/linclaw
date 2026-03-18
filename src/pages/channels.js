@@ -6,6 +6,7 @@ import { api } from '../lib/api/feature-services.js'
 import { toast } from '../components/toast.js'
 import { showContentModal, showConfirm } from '../components/modal.js'
 import { icon } from '../lib/icons.js'
+import { refreshGatewayStatus } from '../lib/app-state.js'
 
 // ── 渠道注册表：定义每个支持的消息渠道的元数据和表单规格 ──
 
@@ -545,8 +546,16 @@ async function openConfigDialog(pid, page, state) {
       }
 
       // 写入配置
-      btnSave.textContent = '写入配置...'
+      btnSave.textContent = '等待 Gateway 重载...'
       await api.saveMessagingPlatform(pid, form)
+
+      // 轮询最多 8s，等待 Gateway 重载完成
+      let gatewayReady = false
+      for (let i = 0; i < 16; i++) {
+        await new Promise(r => setTimeout(r, 500))
+        const running = await refreshGatewayStatus({ force: true })
+        if (running) { gatewayReady = true; break }
+      }
 
       // 写入 Agent 绑定到 openclaw.json bindings
       const selectedAgent = modal.querySelector('select[name="__agentBinding"]')?.value || ''
@@ -556,7 +565,7 @@ async function openConfigDialog(pid, page, state) {
         console.warn('[channels] 保存 Agent 绑定失败:', e)
       }
 
-      toast(`${reg.label} 配置已保存，Gateway 正在重载`, 'success')
+      toast(`${reg.label} 配置已保存${gatewayReady ? '，Gateway 已重载' : ''}`, 'success')
       modal.close?.() || modal.remove?.()
       await loadPlatforms(page, state)
     } catch (e) {
