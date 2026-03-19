@@ -146,6 +146,10 @@ function inlineFormat(text) {
       const safe = /^https?:|^mailto:/i.test(url.trim()) ? url : '#'
       return `<a href="${safe}" target="_blank" rel="noopener">${label}</a>`
     })
+    .replace(/(?<![="'])(https?:\/\/[^\s<>"')\]]+)/g, url => {
+      const clean = url.replace(/[.,;:!?]+$/, '')
+      return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>`
+    })
 }
 
 window.__copyCode = function(btn) {
